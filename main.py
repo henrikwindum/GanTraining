@@ -262,7 +262,7 @@ if __name__ == "__main__":
     parser.add_argument("--subset", type=str, default="horse", help="which CIFAR10 subset to use", 
         choices=['', 'airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'])
     
-    parser.add_argument("--iter", type=int, default=1500000)
+    parser.add_argument("--iter", type=int, default=150000)
     parser.add_argument("--batch_real", type=int, default=4)
 
     parser.add_argument("--r1", type=float, default=5)
@@ -304,7 +304,7 @@ if __name__ == "__main__":
     parser.add_argument("--enable_full_resolution", default=8, type=int, help='Enable full resolution attention index')
 
     parser.add_argument("--lr_decay", action="store_true", help='Whether to use lr decay')
-    parser.add_argument("--lr_decay_start_steps", default=1000000, type=int, help='Steps to start lr decay')
+    parser.add_argument("--lr_decay_start_steps", default=100000, type=int, help='Steps to start lr decay')
 
     parser.add_argument("--lmdb", action="store_true", help='Whether to use lmdb datasets')
     
