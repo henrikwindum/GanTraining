@@ -6,6 +6,8 @@ Welcome to the official repository of our project, where we explore the groundbr
 
 The primary objective of this project is to evaluate how well StyleSwin, a model renowned for its performance in high-resolution image generation, adapts to the challenge of generating high-quality images from low-resolution inputs. By leveraging the transformer-based architecture of StyleSwin, we hypothesize that the model can capture intricate details and textures even when working with less information, thereby producing superior low-resolution image outputs compared to traditional methods.
 
+![Animation Example: CIFAR10 Horse Subset](images/gan_evolution.gif)
+
 ## Datasets
 
 To ensure a comprehensive evaluation, we will experiment with a variety of datasets, each offering unique challenges and characteristics:
