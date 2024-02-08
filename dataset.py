@@ -36,6 +36,24 @@ def get_dataset(args):
             # convert filtered list back to a Dataset
             dst_train = torch.utils.data.Subset(dst_train, indices=range(len(dst_train)))
             dst_test = torch.utils.data.Subset(dst_test, indices=range(len(dst_test)))
+    
+    elif args.dataset == 'Oxford':
+        channel = 3
+        im_size = args.size
+        num_classes = 3
+        mean = [0.4783, 0.4459, 0.3957]
+        std = [0.2652, 0.2598, 0.2679]
+
+        transform = transforms.Compose([
+            transforms.ToTensor(), 
+            transforms.Normalize(mean=mean, std=std), 
+            transforms.Resize((im_size, im_size)), 
+            transforms.CenterCrop((im_size, im_size))
+        ])
+
+        dst_train = datasets.OxfordIIITPet(args.path, split="trainval", download=True, transform=transform) # no augmentation
+        dst_test = datasets.OxfordIIITPet(args.path, split="test", download=True, transform=transform)
+
 
     testloader = torch.utils.data.DataLoader(dst_test, batch_size=args.batch_real, shuffle=False, num_workers=args.workers)
 
