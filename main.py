@@ -61,8 +61,8 @@ def g_nonsaturating_loss(fake_pred):
 def get_time():
     return str(time.strftime("[%Y-%m-%d %H:%M:%S]", time.localtime()))
 
-def log_losses(d_loss, g_loss, r1_loss, step):
-    wandb.log({'D_loss': d_loss, 'G_loss': g_loss, 'R1_loss': r1_loss}, step=step)
+def log(d_loss, g_loss, r1_loss, G_lr, D_lr, step):
+    wandb.log({'D_loss': d_loss, 'G_loss': g_loss, 'R1_loss': r1_loss, "G_lr": G_lr, "D_lr": D_lr}, step=step)
 
 def save_checkpoint(g, d, g_ema, save_dir, step):
     checkpoint = {
@@ -192,7 +192,7 @@ def train(trainloader, testloader, generator, discriminator, g_optim, d_optim, g
 
         if get_rank() == 0:
             if it % args.log_freq == 0:
-                log_losses(d_loss_val, g_loss_val, r1_val, step=it)
+                log(d_loss_val, g_loss_val, r1_val, args.G_lr, args.D_lr, step=it)
 
             if it % args.print_freq == 0:
                 iters_time = time.time() - end
@@ -202,7 +202,10 @@ def train(trainloader, testloader, generator, discriminator, g_optim, d_optim, g
                 else: 
                     print("{} Iters: {}\tTime: {:.4f}\tD_loss: {:.4f}\tG_loss: {:.4f}\tR1: {:.4f}".format(get_time(), it, iters_time, d_loss_val, g_loss_val, r1_val))
 
-            if it % args.eval_freq == 0:
+            if it % args.save_freq == 0:
+                save_checkpoint(g_module, d_module, g_ema, save_dir, step=it)
+
+            if it != 0 and it % args.eval_freq == 0:
                 save_checkpoint(g_module, d_module, g_ema, save_dir, step=it)
 
                 print("=> Evaluation ...")
@@ -279,7 +282,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--print_freq", type=int, default=1000)
     parser.add_argument("--save_freq", type=int, default=1000)
-    parser.add_argument("--eval_freq", type=int, default=50000)
+    parser.add_argument("--eval_freq", type=int, default=10000)
     parser.add_argument("--log_freq", type=int, default=10)
 
     parser.add_argument('--workers', default=8, type=int, help='Number of workers')
@@ -301,9 +304,10 @@ if __name__ == "__main__":
     parser.add_argument("--enable_full_resolution", default=8, type=int, help='Enable full resolution attention index')
 
     parser.add_argument("--lr_decay", action="store_true", help='Whether to use lr decay')
-    parser.add_argument("--lr_decay_start_steps", default=1300000, type=int, help='Steps to start lr decay')
+    parser.add_argument("--lr_decay_start_steps", default=1000000, type=int, help='Steps to start lr decay')
 
     parser.add_argument("--lmdb", action="store_true", help='Whether to use lmdb datasets')
+    
 
     args, _ = parser.parse_known_args()
 
@@ -315,7 +319,7 @@ if __name__ == "__main__":
     args.ttur = True
     args.lr_decay = True
 
-    args.n_mlp = 8
+    args.n_mlp = 4
     args.g_reg_every = 1e7 # We do not apply regularization on g
 
     if args.distributed:

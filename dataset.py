@@ -54,7 +54,33 @@ def get_dataset(args):
         dst_train = datasets.OxfordIIITPet(args.path, split="trainval", download=True, transform=transform) # no augmentation
         dst_test = datasets.OxfordIIITPet(args.path, split="test", download=True, transform=transform)
 
-
     testloader = torch.utils.data.DataLoader(dst_test, batch_size=args.batch_real, shuffle=False, num_workers=args.workers)
 
     return channel, im_size, num_classes, class_names, mean, std, dst_train, testloader
+
+def get_info(dataset):
+    if dataset == 'MNIST':
+        channel = 1
+        im_size = 28
+        num_classes = 10
+        mean = [0.1307]
+        std = [0.3081]
+    
+    elif dataset == 'CIFAR10':
+        channel = 3
+        im_size = 32
+        num_classes = 10
+        mean = [0.4914, 0.4822, 0.4465]
+        std = [0.2024, 0.1994, 0.2010]
+
+    elif dataset == 'Oxford':
+        channel = 3
+        im_size = 128
+        num_classes = 42
+        mean = [0.4783, 0.4459, 0.3957]
+        std = [0.2652, 0.2598, 0.2679]
+    
+    else: 
+        raise ValueError("Warning: dataset not compatible! Try 'MNIST', 'CIFAR10', or 'Oxford' instead.")
+    
+    return channel, im_size, num_classes, mean, std
